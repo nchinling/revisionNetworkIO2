@@ -34,14 +34,8 @@ public class ClientApp {
                 dos.writeUTF(input);
                 dos.flush();
 
-                String input2 = 
-                cons.readLine("Send second list of 5 numbers: ");
-
-                dos.writeUTF(input2);
-                dos.flush();
-
                 String response = dis.readUTF();
-                if(response.contains("Result is")){
+                if(response.contains("Sorted result is")){
                     String[] numberValArr = response.split("_");
                     System.out.printf("The server returned %s\n",numberValArr[1]);
 
@@ -52,6 +46,8 @@ public class ClientApp {
                 is.close();
                 os.close();
                 sock.close();
+                
+                
             }
         }catch(UnknownHostException e){
             e.printStackTrace();

@@ -8,12 +8,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-import static sg.edu.nus.iss.app.server.Calculator.*;
+import static sg.edu.nus.iss.app.server.NumSort.*;
 
 public class ServerApp {
     private static final String ARG_MESSAGE = 
@@ -54,35 +56,44 @@ public class ServerApp {
                 // reading data stream assign to a variable where data is String
                 while(true){
                     try{
+
+                        //Get data from client. 
                         String dataFromClient = dis.readUTF();
-                        for (int i = 0; i < dataFromClient.length(); i++) {
-                            if (Character.isDigit(dataFromClient.charAt(i)) ||dataFromClient.charAt(i) == ' ') {
-                               continue;
-                            }
-                            else{dos.writeUTF("There is an error");}
-                        }
 
-                        //Replicate dataFromClient2
-                        String dataFromClient2 = dis.readUTF();
-                        for (int i = 0; i < dataFromClient2.length(); i++) {
-                            if (Character.isDigit(dataFromClient2.charAt(i)) ||dataFromClient2.charAt(i) == ' ') {
-                               continue;
+                            for (int i = 0; i < dataFromClient.length(); i++) {
+                                if (Character.isDigit(dataFromClient.charAt(i)) ||dataFromClient.charAt(i) == ' ') {
+                                continue;
+                                }
+                                else{dos.writeUTF("Please enter integers.");
+                                dataFromClient = dis.readUTF();
+                                }
                             }
-                            else{dos.writeUTF("There is an error");}
-                        }
-                
-                        int[] result = getCalculator(dataFromClient, dataFromClient2);
+                        
 
-                    
+                        int[] result = getNumSort(dataFromClient);
+
                         for(int i = 0; i<result.length; i++)
                         {
                             System.out.println(result[i]);
                         } 
                         
                         String str = Arrays.toString(result);
-
                         // dos.writeUTF("Result is_" + result);
-                        dos.writeUTF("Result is_" + str);
+                        dos.writeUTF("Sorted result is_" + str);
+
+                        //Convert int[] result to List<String>
+                        //Step 1:Convert int[] to List<Integer>
+                        List<Integer> list = new ArrayList<Integer>();
+                        for (int a : result)
+                            list.add(a);
+                        //Step 2:Convert List<Integer> to List<String>
+                        List<String> newList = list.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.toList());
+
+                        PrintList p = new PrintList();
+                        p.print2file(newList, args[1]);
+
 
                     }catch (EOFException e) {
                         System.out.println("Client disconnected");
